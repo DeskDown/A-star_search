@@ -1,5 +1,5 @@
 import pygame as pg
-from queue import Empty, PriorityQueue
+from queue import PriorityQueue
 
 SC_SIZE = 800
 ROWS = 20
