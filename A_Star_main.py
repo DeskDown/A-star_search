@@ -2,7 +2,7 @@ import pygame as pg
 from queue import PriorityQueue
 
 SC_SIZE = 800
-ROWS = 20
+ROWS = 40
 
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
@@ -134,7 +134,9 @@ def H(p1, p2):
     """
     x1, y1 = p1
     x2, y2 = p2
-    return abs(x1 - x2) + abs(y1 - y2)
+    dx, dy = abs(x1 - x2) , abs(y1 - y2)
+
+    return dx + dy
 
 #--------------------------------------------------------------------------------------#
 
