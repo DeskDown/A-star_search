@@ -30,8 +30,8 @@ class Node:
         self.row = r
         self.col = c
         # Position in terms of pixels
-        self.x = r * width
-        self.y = c * width
+        self.x = c * width
+        self.y = r * width
         # Initial color of all cells is white
         self.color = WHITE
         self.sharing_border = []
@@ -221,7 +221,7 @@ def get_clk_pos(pos, rows, width):
     x, y = pos
     px = x // gap
     py = y // gap
-    return (px,py)
+    return (py,px)
 
 #--------------------------------------------------------------------------------------#
 def empty_the_queue(pq):
