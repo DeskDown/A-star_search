@@ -71,6 +71,8 @@ class Node:
 
     def make_open(self):
         # A Yellow cell is to be explored
+        if self.is_ending_pos():
+            return
         self.color = YELLOW
 
     def make_barrier(self):
