@@ -372,8 +372,6 @@ def main(win, width):
                 if e.key == pg.K_c:
                     start_node, end_node = None, None
                     grid = make_grid(ROWS, width)
-
-
     pg.quit()
 
 if __name__ == "__main__":
