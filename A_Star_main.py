@@ -255,9 +255,9 @@ def find_path(draw, grid, start, end):
         start (Node)
         end (Node)
     """
+    # ignore count var
     count = 0
     pq = PriorityQueue()
-    #pq_items = {start}
     came_from = {}
     # given any node n,
     # g(n) = cost of start --> n
@@ -280,7 +280,6 @@ def find_path(draw, grid, start, end):
         # poping the node with shortest f_score, added earlier
         # 2 is the index of node in tupple
         current = pq.get()[2]
-        #pq_items.remove(current)
         if current == end:
             # we have found the path
             # no further consderation, so empty the queue
@@ -302,9 +301,8 @@ def find_path(draw, grid, start, end):
                 f_score[nbr] = tmp_g + H(nbr.get_pos(), end.get_pos())
                 # add this data to the queue
                 if True: #nbr not in pq_items:
-                    count += 1
+                    count += 0
                     pq.put((f_score[nbr],count, nbr))
-                    #pq_items.add(nbr)
                     # we may explore this node in future
                     nbr.make_open()
         
