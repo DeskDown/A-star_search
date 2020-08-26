@@ -1,3 +1,4 @@
+from os import read
 import pygame as pg
 from queue import PriorityQueue
 
@@ -96,11 +97,16 @@ class Node:
         self.color = GREEN
 
     def draw(self, WIN):
-        """draw the square node
+        """draw the node
 
         Args:
             WIN (pygame window)
         """
+        if self.is_ending_pos() or self.is_starting_pos():
+            radius = self.width // 2
+            center = (self.x + radius, self.y + radius)
+            pg.draw.circle(WIN, self.color, center, radius)
+            return
         top_left_height_width = (self.x, self.y, self.width, self.width)
         pg.draw.rect(WIN, self.color, top_left_height_width)
 
