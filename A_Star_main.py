@@ -130,22 +130,6 @@ class Node:
 
     def __lt__(self, other):
         return False
-#--------------------------------------------------------------------------------------#
-
-
-def H(p1, p2):
-    """heuristic function
-    Args:
-        given any node n (with p1, p2 as coordinates of two nodes)
-        h(n) is a heuristic function that estimates the cost of the cheapest path from n-node to the destination
-    return: Manhattan distance of p1, p2
-    """
-    x1, y1 = p1
-    x2, y2 = p2
-    dx, dy = abs(x1 - x2), abs(y1 - y2)
-    # a tie breaker is added to the result:
-    # h(n) *= 1 + 1/p: p = (minimum cost of taking one step)/(expected maximum path length).
-    return (dx + dy)*(1 + 1/SC_SIZE)
 
 #--------------------------------------------------------------------------------------#
 
@@ -239,7 +223,7 @@ def get_clk_pos(pos, rows, width):
 
 def empty_the_queue(pq):
     while not pq.empty():
-        node = pq.get()[2]
+        node = pq.get()[1]
         node.reset_color()
 
 #--------------------------------------------------------------------------------------#
@@ -260,6 +244,22 @@ def make_final_path(came_from, current, draw):
 
 #--------------------------------------------------------------------------------------#
 
+def H(p1, p2):
+    """heuristic function
+    Args:
+        given any node n (with p1, p2 as coordinates of two nodes)
+        h(n) is a heuristic function that estimates the cost of the cheapest path from n-node to the destination
+    return: Manhattan distance of p1, p2
+    """
+    x1, y1 = p1
+    x2, y2 = p2
+    dx, dy = abs(x1 - x2), abs(y1 - y2)
+    # a tie breaker is added to the result:
+    # h(n) *= 1 + 1/p: p = (minimum cost of taking one step)/(expected maximum path length).
+    return (dx + dy) * (1 + 1 / SC_SIZE)
+
+#--------------------------------------------------------------------------------------#
+
 
 def find_path(draw, grid, start, end):
     """A-star path finder
@@ -270,8 +270,6 @@ def find_path(draw, grid, start, end):
         start (Node)
         end (Node)
     """
-    # ignore count var
-    count = 0
     pq = PriorityQueue()
     came_from = {}
     # given any node n,
@@ -284,8 +282,8 @@ def find_path(draw, grid, start, end):
     f_score[start] = H(start.get_pos(), end.get_pos())  # since g(start) is 0
 
     # initialize the queue
-    # (f(n), when it was added, n)
-    pq.put((f_score[start], count, start))
+    # (f(n), n)
+    pq.put((f_score[start], start))
 
     while not pq.empty():
         for e in pg.event.get():
@@ -293,8 +291,8 @@ def find_path(draw, grid, start, end):
                 pg.quit()
 
         # poping the node with shortest f_score, added earlier
-        # 2 is the index of node in tupple
-        current = pq.get()[2]
+        # 1 is the index of node in tupple
+        current = pq.get()[1]
         if current == end:
             # we have found the path
             # no further consderation, so empty the queue
@@ -315,11 +313,9 @@ def find_path(draw, grid, start, end):
                 # estimate h(n) of neighbout
                 f_score[nbr] = tmp_g + H(nbr.get_pos(), end.get_pos())
                 # add this data to the queue
-                if True:  # nbr not in pq_items:
-                    count += 0
-                    pq.put((f_score[nbr], count, nbr))
-                    # we may explore this node in future
-                    nbr.make_open()
+                pq.put((f_score[nbr], nbr))
+                # we may explore this node in future
+                nbr.make_open()
 
         # We have considered this node
         current.make_closed()
@@ -359,7 +355,7 @@ def main(win, width):
                     end_node.make_ending_pos()
                 elif node != end_node and node != start_node:
                     node.make_barrier()
-            elif pg.mouse.get_pressed()[2]:
+            elif pg.mouse.get_pressed()[1]:
                 # right click
                 # reset the node state
                 pos = pg.mouse.get_pos()
