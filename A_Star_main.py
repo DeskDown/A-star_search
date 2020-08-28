@@ -143,7 +143,8 @@ def H(p1, p2):
     x1, y1 = p1
     x2, y2 = p2
     dx, dy = abs(x1 - x2), abs(y1 - y2)
-
+    # a tie breaker is added to the result:
+    # h(n) *= 1 + 1/p: p = (minimum cost of taking one step)/(expected maximum path length).
     return (dx + dy)*(1 + 1/SC_SIZE)
 
 #--------------------------------------------------------------------------------------#
