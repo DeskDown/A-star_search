@@ -1,4 +1,3 @@
-from os import read
 import pygame as pg
 from queue import PriorityQueue
 
@@ -41,7 +40,7 @@ class Node:
     def get_pos(self):
         # Get grid-wise position
         return (self.row, self.col)
-    
+
     def is_closed(self):
         # A GREY cell is marked as closed.
         return self.color == GREY
@@ -52,16 +51,16 @@ class Node:
 
     def is_barrier(self):
         # A BLACK cell is user defined barrier
-        return  self.color == BLACK
+        return self.color == BLACK
 
     def is_starting_pos(self):
         # A red cell is starting position
         return self.color == RED
-    
+
     def is_ending_pos(self):
         # A BLUE cell is the final destination of path
         return self.color == BLUE
-    
+
     def reset_color(self):
         self.color = WHITE
 
@@ -78,16 +77,16 @@ class Node:
 
     def make_barrier(self):
         # A BLACK cell is user defined barrier
-         self.color = BLACK
+        self.color = BLACK
 
     def make_starting_pos(self):
         # A red cell is starting position
         self.color = RED
-    
+
     def make_ending_pos(self):
         # A BLUE cell is the final destination of path
         self.color = BLUE
-    
+
     def make_path(self):
         """ shortest path from node A --> B is shown in Green.
         color each node to green.
@@ -133,6 +132,7 @@ class Node:
         return False
 #--------------------------------------------------------------------------------------#
 
+
 def H(p1, p2):
     """heuristic function
     Args:
@@ -142,11 +142,12 @@ def H(p1, p2):
     """
     x1, y1 = p1
     x2, y2 = p2
-    dx, dy = abs(x1 - x2) , abs(y1 - y2)
+    dx, dy = abs(x1 - x2), abs(y1 - y2)
 
     return dx + dy
 
 #--------------------------------------------------------------------------------------#
+
 
 def make_grid(rows, width):
     """making the grid data structure
@@ -165,10 +166,11 @@ def make_grid(rows, width):
             node = Node(r, c, gap, rows)
             ls.append(node)
         grid.append(ls)
-    
+
     return grid
 
 #--------------------------------------------------------------------------------------#
+
 
 def draw_grid(win, rows, width):
     """draw grid lines
@@ -182,14 +184,15 @@ def draw_grid(win, rows, width):
     for r in range(rows):
         # Horizontal lines
         start = (0, r * gap)
-        stop = (width, r*gap)
+        stop = (width, r * gap)
         pg.draw.line(win, L_GREY, start, stop)
         # Vertical lines
         start = (r * gap, 0)
         stop = (r * gap, width)
         pg.draw.line(win, L_GREY, start, stop)
-    
+
 #--------------------------------------------------------------------------------------#
+
 
 def redraw(win, grid, rows, width):
     """draws the grid dynamically
@@ -207,10 +210,11 @@ def redraw(win, grid, rows, width):
         for node in row:
             node.draw(win)
     # paint grid lines
-    draw_grid(win, rows,width)
+    draw_grid(win, rows, width)
     pg.display.update()
 
 #--------------------------------------------------------------------------------------#
+
 
 def get_clk_pos(pos, rows, width):
     """convert pixel pos to node pos
@@ -227,15 +231,18 @@ def get_clk_pos(pos, rows, width):
     x, y = pos
     px = x // gap
     py = y // gap
-    return (py,px)
+    return (py, px)
 
 #--------------------------------------------------------------------------------------#
+
+
 def empty_the_queue(pq):
     while not pq.empty():
         node = pq.get()[2]
         node.reset_color()
 
 #--------------------------------------------------------------------------------------#
+
 
 def make_final_path(came_from, current, draw):
     """Draw the final path
@@ -251,6 +258,7 @@ def make_final_path(came_from, current, draw):
         draw()
 
 #--------------------------------------------------------------------------------------#
+
 
 def find_path(draw, grid, start, end):
     """A-star path finder
@@ -272,11 +280,11 @@ def find_path(draw, grid, start, end):
     g_score = {node: float("inf") for row in grid for node in row}
     g_score[start] = 0
     f_score = {node: float("inf") for row in grid for node in row}
-    f_score[start] = H(start.get_pos(), end.get_pos()) # since g(start) is 0
+    f_score[start] = H(start.get_pos(), end.get_pos())  # since g(start) is 0
 
     # initialize the queue
     # (f(n), when it was added, n)
-    pq.put((f_score[start],count, start))
+    pq.put((f_score[start], count, start))
 
     while not pq.empty():
         for e in pg.event.get():
@@ -293,7 +301,7 @@ def find_path(draw, grid, start, end):
             current.make_ending_pos()
             make_final_path(came_from, end, draw)
             return True
-        
+
         for nbr in current.sharing_border:
             # cost of current --> nbr is 1, since we are neighbours
             tmp_g = g_score[current] + 1
@@ -306,19 +314,20 @@ def find_path(draw, grid, start, end):
                 # estimate h(n) of neighbout
                 f_score[nbr] = tmp_g + H(nbr.get_pos(), end.get_pos())
                 # add this data to the queue
-                if True: #nbr not in pq_items:
+                if True:  # nbr not in pq_items:
                     count += 0
-                    pq.put((f_score[nbr],count, nbr))
+                    pq.put((f_score[nbr], count, nbr))
                     # we may explore this node in future
                     nbr.make_open()
-        
+
         # We have considered this node
         current.make_closed()
         draw()
-    
+
     return False
 
 #--------------------------------------------------------------------------------------#
+
 
 def main(win, width):
     grid = make_grid(ROWS, width)
@@ -365,18 +374,20 @@ def main(win, width):
             if e.type == pg.KEYDOWN:
                 # Enter space key to start searching the path
                 if e.key == pg.K_SPACE and start_node and end_node:
-                    #update the neighbors
+                    # update the neighbors
                     for row in grid:
                         for node in row:
                             node.update_surrounding(grid)
-                    #start searching for path
-                    path_found = find_path(lambda: redraw(win, grid, ROWS, width), grid, start_node, end_node)
+                    # start searching for path
+                    path_found = find_path(lambda: redraw(
+                        win, grid, ROWS, width), grid, start_node, end_node)
                     if not path_found:
                         print("No Path Found.")
                 if e.key == pg.K_c:
                     start_node, end_node = None, None
                     grid = make_grid(ROWS, width)
     pg.quit()
+
 
 if __name__ == "__main__":
     main(WIN, SC_SIZE)
