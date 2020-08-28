@@ -133,21 +133,6 @@ class Node:
 #--------------------------------------------------------------------------------------#
 
 
-def H(p1, p2):
-    """heuristic function
-    Args:
-        given any node n (with p1, p2 as coordinates of two nodes)
-        h(n) is a heuristic function that estimates the cost of the cheapest path from n-node to the destination
-    return: Manhattan distance of p1, p2
-    """
-    x1, y1 = p1
-    x2, y2 = p2
-    dx, dy = abs(x1 - x2), abs(y1 - y2)
-    # a tie breaker is added to the result:
-    # h(n) *= 1 + 1/p: p = (minimum cost of taking one step)/(expected maximum path length).
-    return (dx + dy)*(1 + 1/SC_SIZE)
-
-#--------------------------------------------------------------------------------------#
 
 
 def make_grid(rows, width):
@@ -260,6 +245,21 @@ def make_final_path(came_from, current, draw):
 
 #--------------------------------------------------------------------------------------#
 
+def H(p1, p2, p):
+    """heuristic function
+    Args:
+        given any node n (with p1, p2 as coordinates of two nodes)
+        h(n) is a heuristic function that estimates the cost of the cheapest path from n-node to the destination
+    return: Manhattan distance of p1, p2
+    """
+    x1, y1 = p1
+    x2, y2 = p2
+    dx, dy = abs(x1 - x2), abs(y1 - y2)
+    # a tie breaker is added to the result:
+    # h(n) *= 1 + 1/p: p = (minimum cost of taking one step)/(expected maximum path length).
+    return (dx + dy) + (1 - 1/p)
+
+#--------------------------------------------------------------------------------------#
 
 def find_path(draw, grid, start, end):
     """A-star path finder
@@ -271,7 +271,7 @@ def find_path(draw, grid, start, end):
         end (Node)
     """
     # ignore count var
-    count = 0
+    count = 1
     pq = PriorityQueue()
     came_from = {}
     # given any node n,
@@ -281,7 +281,7 @@ def find_path(draw, grid, start, end):
     g_score = {node: float("inf") for row in grid for node in row}
     g_score[start] = 0
     f_score = {node: float("inf") for row in grid for node in row}
-    f_score[start] = H(start.get_pos(), end.get_pos())  # since g(start) is 0
+    f_score[start] = H(start.get_pos(), end.get_pos(), count)  # since g(start) is 0
 
     # initialize the queue
     # (f(n), when it was added, n)
@@ -313,7 +313,8 @@ def find_path(draw, grid, start, end):
                 # update the g(n) of the neighbour
                 g_score[nbr] = tmp_g
                 # estimate h(n) of neighbout
-                f_score[nbr] = tmp_g + H(nbr.get_pos(), end.get_pos())
+                count += 1
+                f_score[nbr] = tmp_g + H(nbr.get_pos(), end.get_pos(), count)
                 # add this data to the queue
                 if True:  # nbr not in pq_items:
                     count += 0
